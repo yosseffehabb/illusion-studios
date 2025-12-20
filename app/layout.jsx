@@ -1,5 +1,16 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  BBH_Sans_Bogle,
+  Roboto_Condensed,
+} from "next/font/google";
 import "./globals.css";
+
+const robotoCondensed = Roboto_Condensed({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-bbh-sans-bogle",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,12 +29,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={robotoCondensed.variable}>
+      <body className={robotoCondensed.className}>{children}</body>
     </html>
   );
 }
