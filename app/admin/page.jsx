@@ -1,6 +1,7 @@
 "use client";
 
 import FullScreenLoader from "@/components/layout/FullScreenLoader";
+import ViewOrderButton from "@/components/layout/viewOrderButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -293,13 +294,7 @@ export default function OrderTrackingPage() {
                         {formatDate(order.created_at)}
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 bg-primarygreen-500 text-primarygreen-50 hover:bg-primarygreen-600"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
+                        <ViewOrderButton order={order} />
                       </td>
                     </tr>
                   ))}
@@ -347,9 +342,9 @@ export default function OrderTrackingPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full h-9 bg-primarygreen-500 text-primarygreen-50 hover:bg-primarygreen-600"
+                    className="w-full h-9 bg-primarygreen-500 text-primarygreen-50 hover:bg-primarygreen-700"
                   >
-                    <Eye className="h-4 w-4 mr-2" />
+                    <Eye className="h-4 w-4 mr-2 " />
                     View Details
                   </Button>
                 </div>

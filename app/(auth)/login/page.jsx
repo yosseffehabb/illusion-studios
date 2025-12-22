@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-const Index = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit, reset } = useForm();
+function Page() {
+  const { register, handleSubmit } = useForm();
+  const { login, isLoggingIn, loginError } = useAuth();
 
   function onSubmit(data) {
-    console.log(data);
+    login(data);
   }
 
   return (
@@ -60,11 +61,7 @@ const Index = () => {
 
       {/* Form Panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-card min-h-[calc(100vh-280px)] sm:min-h-[calc(100vh-320px)] lg:min-h-screen">
-        <div
-          className="w-full max-w-sm sm:max-w-md space-y-8 sm:space-y-10 animate-fade-in-up"
-          style={{ animationDelay: "0.2s" }}
-        >
-          {/* Header */}
+        <div className="w-full max-w-sm sm:max-w-md space-y-8 sm:space-y-10 animate-fade-in-up">
           <div className="space-y-2 sm:space-y-3">
             <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-primarygreen-500">
               Log in
@@ -74,11 +71,17 @@ const Index = () => {
             </p>
           </div>
 
-          {/* Form */}
           <form
             className="space-y-5 sm:space-y-6"
             onSubmit={handleSubmit(onSubmit)}
           >
+            {/* Error Message */}
+            {loginError && (
+              <div className="p-3 text-sm text-red-500 bg-red-50 border border-red-200 rounded-md">
+                {loginError.message}
+              </div>
+            )}
+
             <div className="space-y-4 sm:space-y-5">
               {/* Email */}
               <div className="space-y-2">
@@ -93,7 +96,8 @@ const Index = () => {
                   type="email"
                   placeholder="name@example.com"
                   required
-                  className="h-11 sm:h-12 px-4 text-sm bg-primarygreen-50 border-border placeholder:text-neutral-400/60 transition-all duration-200 focus-visible:ring-1 focus-visible:ring-primarygreen-500 border-none "
+                  disabled={isLoggingIn}
+                  className="h-11 sm:h-12 px-4 text-sm bg-primarygreen-50 border-border placeholder:text-neutral-400/60 transition-all duration-200 focus-visible:ring-1 focus-visible:ring-primarygreen-500 border-none"
                   {...register("email")}
                 />
               </div>
@@ -106,13 +110,13 @@ const Index = () => {
                 >
                   Password
                 </Label>
-
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   required
-                  className="h-11 sm:h-12 px-4 text-sm bg-primarygreen-50 border-border placeholder:text-neutral-400/60 transition-all duration-200 focus-visible:ring-1 focus-visible:ring-primarygreen-500 border-none "
+                  disabled={isLoggingIn}
+                  className="h-11 sm:h-12 px-4 text-sm bg-primarygreen-50 border-border placeholder:text-neutral-400/60 transition-all duration-200 focus-visible:ring-1 focus-visible:ring-primarygreen-500 border-none"
                   {...register("password")}
                 />
               </div>
@@ -123,9 +127,9 @@ const Index = () => {
               type="submit"
               size="lg"
               className="w-full h-11 sm:h-12 bg-primarygreen-500 text-primarygreen-50 hover:bg-primarygreen-700 font-semibold tracking-wide transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
-              disabled={isLoading}
+              disabled={isLoggingIn}
             >
-              {isLoading ? (
+              {isLoggingIn ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Signing in...
@@ -136,9 +140,6 @@ const Index = () => {
             </Button>
           </form>
 
-          {/* Sign up link */}
-
-          {/* Terms */}
           <p className="text-[10px] sm:text-xs text-center tracking-wide text-neutral-400 leading-relaxed">
             By continuing, you agree to our{" "}
             <a
@@ -159,6 +160,6 @@ const Index = () => {
       </div>
     </div>
   );
-};
+}
 
-export default Index;
+export default Page;
