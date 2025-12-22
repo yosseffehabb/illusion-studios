@@ -5,6 +5,7 @@ import {
   Roboto_Condensed,
 } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/providers/ReactQueryProvider";
 
 const robotoCondensed = Roboto_Condensed({
   subsets: ["latin"],
@@ -30,7 +31,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={robotoCondensed.variable}>
-      <body className={robotoCondensed.className}>{children}</body>
+      <body className={robotoCondensed.className}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
