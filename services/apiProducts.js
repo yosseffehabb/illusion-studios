@@ -1,31 +1,19 @@
-import supabase from "../lib/supabase/client";
+// services/apiProducts.js
+import supabase from "@/lib/supabase/client";
 
+// Get all products
 export async function getProducts() {
-  try {
-    const { data: products, error } = await supabase
-      .from("products")
-      .select(
-        `
-            *,
-            category:categories(id, name, slug),
-            variants:product_variants(id, size, stock)
-          `
-      )
-      .eq("status", "active") // Only active products
-      .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("products")
+    .select(
+      `
+      *,
+      category:categories(id, name, slug),
+      variants:product_variants(id, size, stock)
+    `
+    )
+    .order("created_at", { ascending: false });
 
-    if (error) throw error;
-
-    return {
-      success: true,
-      products: products || [],
-    };
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return {
-      success: false,
-      products: [],
-      error: error.message,
-    };
-  }
+  if (error) throw new Error(error.message);
+  return data;
 }

@@ -44,16 +44,24 @@ export function useAuth() {
     },
   });
 
-  // Logout mutation
+  // Logout mutation - UPDATED
   const logoutMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.setQueryData(["auth-user"], null);
-      router.push("/login");
-      router.refresh();
+      // Clear React Query cache
+      queryClient.clear();
+
+      // Force hard redirect to clear all cached state
+      // This prevents hydration mismatches
+      window.location.href = "/login";
+    },
+    onError: (error) => {
+      console.error("Logout error:", error);
+      // Even if logout fails, force redirect
+      window.location.href = "/login";
     },
   });
 

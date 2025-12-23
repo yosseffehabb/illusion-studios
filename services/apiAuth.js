@@ -31,11 +31,17 @@ export const authService = {
     return data;
   },
 
-  // Logout
+  // Logout - UPDATED
   async logout() {
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+
+    // Force hard navigation to clear all cached state
+    // This prevents hydration mismatches after logout
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
   },
 
   // Get current session

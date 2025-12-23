@@ -5,13 +5,13 @@ import ViewOrderButton from "@/components/layout/viewOrderButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { getAllOrders } from "@/services/apiOrders";
-import { Select } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
 import {
   Filter,
@@ -35,27 +35,24 @@ export default function OrderTrackingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
-  // Get orders from API data
   const orders = useMemo(() => data?.orders || [], [data]);
 
   const statuses = [
     "pending",
     "confirmed",
-    "out for delivery",
+    "out_for_delivery",
     "delivered",
     "cancelled",
   ];
 
-  // Calculate statistics
   const statistics = useMemo(() => {
     return {
-      pending: orders.filter((order) => order.status === "pending").length,
-      confirmed: orders.filter((order) => order.status === "confirmed").length,
-      "out for delivery": orders.filter(
-        (order) => order.status === "out for delivery"
-      ).length,
-      delivered: orders.filter((order) => order.status === "delivered").length,
-      cancelled: orders.filter((order) => order.status === "cancelled").length,
+      pending: orders.filter((o) => o.status === "pending").length,
+      confirmed: orders.filter((o) => o.status === "confirmed").length,
+      out_for_delivery: orders.filter((o) => o.status === "out_for_delivery")
+        .length,
+      delivered: orders.filter((o) => o.status === "delivered").length,
+      cancelled: orders.filter((o) => o.status === "cancelled").length,
     };
   }, [orders]);
 
@@ -84,7 +81,7 @@ export default function OrderTrackingPage() {
     const colors = {
       pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
       confirmed: "bg-blue-100 text-blue-800 border-blue-200",
-      "out for delivery": "bg-purple-100 text-purple-800 border-purple-200",
+      out_for_delivery: "bg-purple-100 text-purple-800 border-purple-200",
       delivered: "bg-green-100 text-green-800 border-green-200",
       cancelled: "bg-red-100 text-red-800 border-red-200",
     };
@@ -105,7 +102,7 @@ export default function OrderTrackingPage() {
         iconColor: "text-blue-600",
         borderColor: "border-blue-200",
       },
-      "out for delivery": {
+      out_for_delivery: {
         icon: Truck,
         bgColor: "bg-purple-50",
         iconColor: "text-purple-600",
@@ -124,24 +121,27 @@ export default function OrderTrackingPage() {
         borderColor: "border-red-200",
       },
     };
-    return configs[status];
+    return (
+      configs[status] || {
+        icon: X,
+        bgColor: "bg-gray-50",
+        iconColor: "text-gray-600",
+        borderColor: "border-gray-200",
+      }
+    );
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
-  if (isLoading) {
-    return <FullScreenLoader isLoading={isLoading} />;
-  }
+  if (isLoading) return <FullScreenLoader isLoading={isLoading} />;
 
-  if (error) {
+  if (error)
     return (
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
         <div className="text-center py-12 text-red-600">
@@ -149,7 +149,6 @@ export default function OrderTrackingPage() {
         </div>
       </div>
     );
-  }
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
@@ -157,12 +156,11 @@ export default function OrderTrackingPage() {
         Your Orders
       </h1>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
         {statuses.map((status) => {
           const config = getStatCardConfig(status);
           const Icon = config.icon;
-          const count = statistics[status];
+          const count = statistics[status] || 0;
 
           return (
             <div
@@ -177,16 +175,14 @@ export default function OrderTrackingPage() {
                 </span>
               </div>
               <div className="text-xs font-medium text-gray-600 capitalize">
-                {status}
+                {status.replaceAll("_", " ")}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        {/* Search Input */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primarygreen-500" />
           <Input
@@ -198,16 +194,15 @@ export default function OrderTrackingPage() {
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute  right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           )}
         </div>
 
-        {/* Status Filter */}
         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-full sm:w-[180px] h-10 ">
+          <SelectTrigger className="w-full sm:w-[180px] h-10">
             <Filter className="h-4 w-4 mr-2 text-primarygreen-500" />
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -215,13 +210,12 @@ export default function OrderTrackingPage() {
             <SelectItem value="all">All Statuses</SelectItem>
             {statuses.map((status) => (
               <SelectItem key={status} value={status}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+                {status.replaceAll("_", " ")}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* Clear Filters Button */}
         {hasActiveFilters && (
           <Button
             onClick={clearFilters}
@@ -233,7 +227,6 @@ export default function OrderTrackingPage() {
         )}
       </div>
 
-      {/* Orders Table - Mobile Friendly */}
       <div className="border rounded-lg overflow-hidden">
         {filteredOrders.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
@@ -241,7 +234,6 @@ export default function OrderTrackingPage() {
           </div>
         ) : (
           <>
-            {/* Desktop Table */}
             <div className="hidden sm:block max-h-[calc(100vh-280px)] overflow-auto">
               <table className="w-full">
                 <thead className="bg-primarygreen-500 sticky top-0 z-10 text-primarygreen-50">
@@ -287,7 +279,7 @@ export default function OrderTrackingPage() {
                             order.status
                           )}`}
                         >
-                          {order.status}
+                          {order.status.replaceAll("_", " ")}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-neutral-400">
@@ -302,7 +294,6 @@ export default function OrderTrackingPage() {
               </table>
             </div>
 
-            {/* Mobile Cards */}
             <div className="sm:hidden max-h-[calc(100vh-280px)] overflow-y-auto bg-primarygreen-50 p-4 space-y-4">
               {filteredOrders.map((order) => (
                 <div
@@ -323,7 +314,7 @@ export default function OrderTrackingPage() {
                         order.status
                       )}`}
                     >
-                      {order.status}
+                      {order.status.replaceAll("_", " ")}
                     </span>
                   </div>
 
@@ -344,7 +335,7 @@ export default function OrderTrackingPage() {
                     size="sm"
                     className="w-full h-9 bg-primarygreen-500 text-primarygreen-50 hover:bg-primarygreen-700"
                   >
-                    <Eye className="h-4 w-4 mr-2 " />
+                    <Eye className="h-4 w-4 mr-2" />
                     View Details
                   </Button>
                 </div>
@@ -354,7 +345,6 @@ export default function OrderTrackingPage() {
         )}
       </div>
 
-      {/* Results Count */}
       {filteredOrders.length > 0 && (
         <div className="mt-4 text-sm text-muted-foreground text-center sm:text-left">
           Showing {filteredOrders.length} of {orders.length} orders

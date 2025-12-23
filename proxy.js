@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function middleware(request) {
+export async function proxy(request) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -36,14 +36,30 @@ export async function middleware(request) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect to login if not authenticated
-  if (!user && !request.nextUrl.pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const pathname = request.nextUrl.pathname;
+
+  // Check if trying to access protected admin routes
+  const isAdminRoute = pathname.startsWith("/admin");
+
+  // Redirect to login if not authenticated and trying to access /admin
+  if (!user && isAdminRoute) {
+    const loginUrl = new URL("/login", request.url);
+    const redirectResponse = NextResponse.redirect(loginUrl);
+    redirectResponse.headers.set("Cache-Control", "no-store, must-revalidate");
+    return redirectResponse;
   }
 
-  // Redirect to dashboard if authenticated and trying to access login
-  if (user && request.nextUrl.pathname.startsWith("/login")) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  // Redirect to admin if authenticated user tries to access login page
+  if (user && pathname === "/login") {
+    const adminUrl = new URL("/admin", request.url);
+    const redirectResponse = NextResponse.redirect(adminUrl);
+    redirectResponse.headers.set("Cache-Control", "no-store, must-revalidate");
+    return redirectResponse;
+  }
+
+  // Prevent caching of auth-protected pages
+  if (isAdminRoute && user) {
+    response.headers.set("Cache-Control", "no-store, must-revalidate");
   }
 
   return response;
@@ -51,12 +67,6 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
