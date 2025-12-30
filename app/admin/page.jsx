@@ -1,7 +1,6 @@
 "use client";
-
 import FullScreenLoader from "@/components/layout/FullScreenLoader";
-import ViewOrderButton from "@/components/layout/viewOrderButton";
+import ViewOrderButton from "@/components/layout/adminComponents/viewOrderButton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -156,6 +155,8 @@ export default function OrderTrackingPage() {
         Your Orders
       </h1>
 
+      {/* /////////////////////stats//////////////////// */}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
         {statuses.map((status) => {
           const config = getStatCardConfig(status);
@@ -181,7 +182,7 @@ export default function OrderTrackingPage() {
           );
         })}
       </div>
-
+      {/*////////////////////////// controls/////////////////////////// */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primarygreen-500" />
@@ -226,6 +227,8 @@ export default function OrderTrackingPage() {
           </Button>
         )}
       </div>
+
+      {/*///////////////////////////////////// table /////////////////////////////////*/}
 
       <div className="border rounded-lg overflow-hidden">
         {filteredOrders.length === 0 ? (

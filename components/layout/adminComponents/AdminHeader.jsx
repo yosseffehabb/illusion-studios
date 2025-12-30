@@ -28,16 +28,22 @@ function AdminHeader() {
             <div className="ml-10 hidden flex-1 items-center justify-between md:flex">
               <div className="flex items-baseline space-x-4">
                 <a
-                  href="#orders"
+                  href="/admin"
                   className="px-3 py-2 text-neutral-400 hover:text-primarygreen-500 transition-colors"
                 >
                   Orders
                 </a>
                 <a
-                  href="#products"
+                  href="/admin/products"
                   className="px-3 py-2 text-neutral-400 hover:text-primarygreen-500 transition-colors"
                 >
                   Products
+                </a>
+                <a
+                  href="/admin/categories"
+                  className="px-3 py-2 text-neutral-400 hover:text-primarygreen-500 transition-colors"
+                >
+                  Categories
                 </a>
               </div>
 

@@ -1,8 +1,7 @@
 import React from "react";
-import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { Button } from "../../ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../../ui/spinner";
 
 export default function LogoutButton() {
   const { logout, isLoggingOut } = useAuth();

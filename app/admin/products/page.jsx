@@ -8,7 +8,7 @@ import { getCategories } from "@/services/apiCategories";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlus, Search, X } from "lucide-react";
 import Link from "next/link";
-import AdminProductCard from "@/components/layout/AdminProductCard";
+import AdminProductCard from "@/components/layout/adminComponents/AdminProductCard";
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");

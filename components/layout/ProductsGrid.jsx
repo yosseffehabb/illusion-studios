@@ -1,4 +1,4 @@
-import AdminProductCard from "./AdminProductCard";
+import AdminProductCard from "./adminComponents/AdminProductCard";
 
 function ProductsGrid({ products, columns = 5 }) {
   const gridCols = {
